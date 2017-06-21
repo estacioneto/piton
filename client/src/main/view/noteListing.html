@@ -1,0 +1,62 @@
+<!--<md-card data-ng-if="!searchParam || (note.title.contains(searchParam))" -->
+<md-card layout="column"
+            class="md-whiteframe-5dp"
+            md-colors="{ background: note.color }">
+
+    <!-- Note Title and content -->
+    <div data-ng-click="notesCtrl.viewNote(note, $event)">
+        <!-- Note header - title and scheduling -->
+        <md-card-header layout-padding layout-align="center center">
+            
+            <!-- Note title -->
+            <h4 class="bold" data-ng-bind="getFormattedTitle()"></h4>
+            <!-- end Note title -->
+            
+            <span flex></span>
+
+            <!-- Scheduling -->
+            <div ng-if="note.scheduling">
+                <i class="fa fa-clock-o fa-lg" md-colors="{color: note.schedulingColor }">
+                    <md-tooltip md-direction="top">
+                        {{ note.scheduling | date : "dd.MM HH:mm" }}
+                    </md-tooltip>
+                </i>
+            </div>
+            <!-- end Scheduling -->
+        </md-card-header>
+        <!-- end Note header - title and scheduling -->
+
+        <!-- Note content -->
+        <md-card-content >
+            <p class="break-word">{{ note.textContent | limitTo: 340 }}{{note.textContent.length > 340 ? '...' : ''}}</p>
+        </md-card-content>
+        <!-- end Note content -->
+    </div>
+    <!-- end Note Title and content -->
+
+    <!-- Delete, archive and unarchive buttons -->
+    <div layout="row" style="text-align: center">
+        <!-- Delete and archive buttons -->
+        <md-button
+                class="btn btn-danger" aria-label="deleteNote"
+                data-ng-click="notesCtrl.removeNote(note)" flex>
+            <md-tooltip md-direction="bottom">
+                    {{note.active ? 'Archive Note' : 'Delete Permanently'}}
+            </md-tooltip>
+            <i data-ng-if="!note.active" class="fa fa-trash-o" aria-hidden="true"></i>
+            <i data-ng-if="note.active" class="fa fa-archive" aria-hidden="true"></i>
+        </md-button>
+        <!-- end Delete and archive buttons -->
+
+        <!-- Unachive button -->
+        <md-button class="btn"
+                    data-ng-if="!note.active" data-ng-click="notesCtrl.makeActive(note)" flex>
+            <md-tooltip md-direction="bottom">
+                    Unarchive note
+            </md-tooltip>
+            <i class="fa fa-refresh" aria-label="reactivateNote"></i>
+        </md-button>
+        <!-- end Unachive button -->
+    </div>
+    <!-- end Delete, archive and unarchive buttons -->
+</md-card>

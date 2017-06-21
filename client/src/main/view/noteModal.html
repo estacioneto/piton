@@ -1,0 +1,173 @@
+<md-dialog aria-label="Note Modal"
+           id="note-modal" md-colors="{background: noteCtrl.getNote().color}"
+           layout-padding>
+
+    <md-dialog-content class="note-modal-header">
+        <!-- Title and Scheduling -->
+        <div md-colors="{background: noteCtrl.getNote().color}" layout="row" layout-align="center center">
+            <!-- Title -->
+            <md-input-container flex>
+                <label>Title</label>
+                <textarea class="" aria-label="noteTitle" id="noteTitle"
+                          md-colors="{background: noteCtrl.getNote().color}"
+                          ng-disabled="!noteCtrl.getNote().active"
+                          ng-model="noteCtrl.getNote().title"
+                          required maxlength="50">
+                </textarea>
+            </md-input-container>
+            <!-- end Title -->
+        </div>
+        <!-- end Title and Scheduling -->
+    </md-dialog-content>
+    <md-dialog-content class="scroll-box">
+        <!-- Content -->
+        <div layout="row">
+            <md-input-container flex>
+                <label>Content</label>
+                <textarea class="" aria-label="noteContent" id="noteContent"
+                          md-colors="{background: noteCtrl.getNote().color}"
+                          ng-disabled="!noteCtrl.getNote().active"
+                          ng-model="noteCtrl.getNote().textContent" rows="3">
+                </textarea>
+            </md-input-container>
+        </div>
+        <!-- end Content -->
+
+        <!-- Todos -->
+        <div layout="column">
+            <div data-ng-repeat="todo in noteCtrl.getNote().todos track by $index" layout="row"
+                 layout-align="center center" class="todo-list-element">
+                <!-- TODO checkbox -->
+                <md-checkbox aria-label="todo-checkbox"
+                             data-ng-checked="todo.done"
+                             data-ng-click="todo.done = !todo.done"
+                             ng-disabled="!noteCtrl.getNote().active">
+                </md-checkbox>
+                <!-- end TODO checkbox -->
+
+                <!-- Todo title -->
+                <md-input-container flex>
+                    <input data-ng-model="todo.title"
+                           aria-label="todo-input-{{$index}}"
+                           id="todo-input-{{$index}}"
+                           md-colors="{background: noteCtrl.getNote().color}"
+                           ng-style="noteCtrl.getTodoInputStyle($index)"
+                           required maxlength="50">
+                </md-input-container>
+                </md-input-container>
+                <!-- end Todo title -->
+
+                <!-- Remove TODO -->
+                <md-button aria-label="Remove Todo"
+                           class="md-icon-button smooth-hover"
+                           id="remove-todo"
+                           ng-click="noteCtrl.getNote().removeTodo($index)"
+                           ng-disabled="!noteCtrl.getNote().active">
+                    <md-tooltip md-direction="top">
+                        Remove Todo
+                    </md-tooltip>
+                    <i class="fa fa-times"></i>
+                </md-button>
+                <!-- end Remove TODO -->
+            </div>
+        </div>
+        <!-- end Todos -->
+
+        <!-- Add new todo Button -->
+        <div layout="row">
+            <md-button layout-align="center center" data-ng-click="noteCtrl.addTodo()"
+                       ng-disabled="!noteCtrl.getNote().active" flex>
+                <!--<i class="fa fa-plus"></i>-->
+                <span flex>Add todo</span>
+            </md-button>
+        </div>
+        <!-- end Add new todo Button -->
+
+        <!-- Tags -->
+        <div layout="column" ng-cloak data-ng-class="!noteCtrl.getNote().active ? 'disable-chips':'' ">
+            <md-chips data-ng-model="noteCtrl.getNote().tags" md-autocomplete-snap 
+                     md-transform-chip="noteCtrl.createChip($chip)" 
+                     md-colors="{background: noteCtrl.getNote().color}">
+                      <md-autocomplete md-selected-item="noteCtrl.selectedTag"
+                        md-search-text="noteCtrl.searchTag"
+                        md-items="tag in noteCtrl.querySearchTags(noteCtrl.searchTag)"
+                        md-item-text="tag.name"
+                        placeholder="Tag your note...">
+                          <span md-highlight-text="noteCtrl.searchTag">{{tag.name}}</span>
+                      </md-autocomplete>
+                      <md-chip-template>
+                        <strong><i>{{$chip}}</i></strong>
+                    </md-chip-template>
+            </md-chips>
+        </div>
+        <!-- end Tags -->
+
+        <!-- Color picker -->
+        <md-menu class="text-right">
+            <md-button aria-label="Open color menu" ng-click="noteCtrl.openColorMenu($mdOpenMenu, $event)"
+                       ng-disabled="!noteCtrl.getNote().active" class="md-raised"
+                       md-colors="{background: noteCtrl.getNote().color}">
+                <span flex>Set Color</span>
+            </md-button>
+            <md-menu-content width="4" layout="row" layout-wrap>
+                <md-menu-item ng-repeat="color in colors">
+                    <md-button aria-label="Note Color" class="md-icon-button md-raised" md-colors="{background: color}"
+                               ng-click="noteCtrl.getNote().color = color">
+                    </md-button>
+                </md-menu-item>
+            </md-menu-content>
+        </md-menu>
+        <!-- end Color picker -->
+        
+        <!--<div>-->
+        <!-- Scheduling datetime picker -->
+        <md-input-container id="note-date-picker">
+            <adm-dtp ng-model='noteCtrl.getNote().dateAndTime'
+                        md-colors="{'color': 'grey-A200'}"
+                        options='{calType: "gregorian", format: "DD/MM/YYYY hh:mm"}'>
+                <md-button ng-disabled="!noteCtrl.getNote().active" class="md-raised"
+                            md-colors="{background: noteCtrl.getNote().color}" layout="column" dtp-open>
+                    <span style="margin: auto"><i class="fa fa-clock-o fa-lg"></i></span>
+                    <md-tooltip md-direction="top">
+                        {{ noteCtrl.getNote().dateAndTime }}
+                    </md-tooltip>
+                </md-button>
+            </adm-dtp>
+        </md-input-container>
+        
+        <!-- Delete scheduling button -->
+        <md-input-container>
+            <md-button aria-label="Delete Scheduling" class="md-icon-button smooth-hover"
+                        data-ng-if="noteCtrl.getNote().dateAndTime && noteCtrl.getNote().active"
+                        data-ng-click="noteCtrl.removeScheduling()"
+                        ng-disabled="!noteCtrl.getNote().active"
+                        id="remove-scheduling">
+                <md-tooltip md-direction="top">
+                    Remove Scheduling
+                </md-tooltip>
+                <i class="fa fa-times"></i>
+            </md-button>
+            <!-- end Delete scheduling button -->
+        </md-input-container>
+        <!-- end Scheduling datetime picker -->
+    </md-dialog-content>
+
+    <div class="cover-scroll-bar" md-colors="{ 'background-color': noteCtrl.getNote().color }"></div>
+
+    <!-- Modal footer -->
+    <md-dialog-actions layout="row">
+        <!--class="btn btn-danger btn-block"-->
+        <md-button aria-label="Cancel" 
+                type="button" 
+                ng-click="noteCtrl.discard()" flex>
+            {{ noteCtrl.getNote().active ? 'Discard' : 'Close' }}
+        </md-button>
+        <!--class="btn btn-primary btn-block"-->
+        <md-button aria-label="Save" 
+                type="button" ng-click="noteCtrl.save()" 
+                ng-if="noteCtrl.getNote().active" flex>
+            Done
+        </md-button>
+    </md-dialog-actions>
+    <!-- end Modal footer -->
+</md-dialog>
